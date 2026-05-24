@@ -12,6 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>iTrack</title>
+
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -42,9 +43,7 @@
       --radius:26px;
     }
 
-    * {
-      box-sizing:border-box;
-    }
+    * { box-sizing:border-box; }
 
     html,
     body {
@@ -55,9 +54,7 @@
       color:var(--text);
     }
 
-    body.modal-open {
-      overflow:hidden;
-    }
+    body.modal-open { overflow:hidden; }
 
     button,
     input,
@@ -71,17 +68,9 @@
       cursor:pointer;
     }
 
-    textarea {
-      resize:vertical;
-    }
-
-    a {
-      text-decoration:none;
-    }
-
-    .hidden {
-      display:none!important;
-    }
+    textarea { resize:vertical; }
+    a { text-decoration:none; }
+    .hidden { display:none!important; }
 
     .logo-img {
       width:56px;
@@ -142,39 +131,13 @@
       filter:brightness(.96);
     }
 
-    .btn.block {
-      width:100%;
-    }
-
-    .btn.light {
-      background:var(--soft-gray);
-      color:var(--text);
-    }
-
-    .btn.outline {
-      background:#fff;
-      color:var(--text);
-      border:1px solid var(--line);
-    }
-
-    .btn.navy {
-      background:var(--navy);
-    }
-
-    .btn.green {
-      background:var(--green);
-    }
-
-    .btn.red {
-      background:var(--red);
-    }
-
-    .btn.small {
-      min-height:34px;
-      border-radius:11px;
-      padding:0 11px;
-      font-size:12px;
-    }
+    .btn.block { width:100%; }
+    .btn.light { background:var(--soft-gray); color:var(--text); }
+    .btn.outline { background:#fff; color:var(--text); border:1px solid var(--line); }
+    .btn.navy { background:var(--navy); }
+    .btn.green { background:var(--green); }
+    .btn.red { background:var(--red); }
+    .btn.small { min-height:34px; border-radius:11px; padding:0 11px; font-size:12px; }
 
     .badge {
       display:inline-flex;
@@ -267,9 +230,7 @@
       backdrop-filter:blur(14px);
     }
 
-    .loader.show {
-      display:grid;
-    }
+    .loader.show { display:grid; }
 
     .loader-card {
       width:min(360px,90%);
@@ -305,20 +266,12 @@
     }
 
     @keyframes spin {
-      to {
-        transform:rotate(360deg);
-      }
+      to { transform:rotate(360deg); }
     }
 
     @keyframes fadeUp {
-      from {
-        opacity:0;
-        transform:translateY(12px);
-      }
-      to {
-        opacity:1;
-        transform:translateY(0);
-      }
+      from { opacity:0; transform:translateY(12px); }
+      to { opacity:1; transform:translateY(0); }
     }
 
     .auth {
@@ -521,18 +474,10 @@
       box-shadow:0 8px 24px rgba(15,23,42,.08);
     }
 
-    .pane {
-      display:none;
-    }
+    .pane { display:none; }
+    .pane.active { display:block; animation:fadeUp .18s ease; }
 
-    .pane.active {
-      display:block;
-      animation:fadeUp .18s ease;
-    }
-
-    .field {
-      margin-bottom:15px;
-    }
+    .field { margin-bottom:15px; }
 
     .field label {
       display:block;
@@ -737,26 +682,11 @@
       animation:fadeUp .18s ease;
     }
 
-    .mobile-header {
-      display:none;
-    }
-
-    .grid {
-      display:grid;
-      gap:18px;
-    }
-
-    .grid-2 {
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    .grid-3 {
-      grid-template-columns:repeat(3,minmax(0,1fr));
-    }
-
-    .grid-4 {
-      grid-template-columns:repeat(4,minmax(0,1fr));
-    }
+    .mobile-header { display:none; }
+    .grid { display:grid; gap:18px; }
+    .grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
 
     .card {
       background:var(--card);
@@ -852,9 +782,7 @@
       font-size:11px;
     }
 
-    .progress {
-      margin-top:14px;
-    }
+    .progress { margin-top:14px; }
 
     .progress-meta {
       display:flex;
@@ -1000,9 +928,7 @@
       gap:18px;
     }
 
-    .profile-main {
-      text-align:center;
-    }
+    .profile-main { text-align:center; }
 
     .profile-photo {
       width:118px;
@@ -1050,9 +976,7 @@
       backdrop-filter:blur(8px);
     }
 
-    .center-modal.show {
-      display:grid;
-    }
+    .center-modal.show { display:grid; }
 
     .modal-card {
       width:min(560px,100%);
@@ -1110,9 +1034,7 @@
       margin-top:22px;
     }
 
-    .bottom-nav {
-      display:none;
-    }
+    .bottom-nav { display:none; }
 
     .empty {
       border:1px dashed #CBD5E1;
@@ -1177,9 +1099,7 @@
         gap:12px;
       }
 
-      .mobile-header strong {
-        font-size:18px;
-      }
+      .mobile-header strong { font-size:18px; }
 
       .mobile-pill {
         margin-top:14px;
@@ -1230,22 +1150,15 @@
         padding:18px;
       }
 
-      .auth-shell {
-        display:block;
-      }
-
-      .hero {
-        display:none;
-      }
+      .auth-shell { display:block; }
+      .hero { display:none; }
 
       .auth-card {
         padding:26px;
         border-radius:30px;
       }
 
-      .mobile-auth-brand {
-        display:block;
-      }
+      .mobile-auth-brand { display:block; }
 
       .auth-card h2,
       .auth-card > p {
@@ -1257,15 +1170,10 @@
         margin-right:auto;
       }
 
-      .tabs {
-        grid-template-columns:repeat(2,1fr);
-      }
-
+      .tabs { grid-template-columns:repeat(2,1fr); }
       .grid-2,
       .grid-3,
-      .grid-4 {
-        grid-template-columns:1fr;
-      }
+      .grid-4 { grid-template-columns:1fr; }
 
       .service-grid {
         grid-template-columns:repeat(4,1fr);
@@ -1277,17 +1185,9 @@
         border-radius:22px;
       }
 
-      .actions .btn {
-        flex:1;
-      }
-
-      .camera-box {
-        height:335px;
-      }
-
-      .profile-shell {
-        grid-template-columns:1fr;
-      }
+      .actions .btn { flex:1; }
+      .camera-box { height:335px; }
+      .profile-shell { grid-template-columns:1fr; }
 
       .modal-card,
       .modal-card.wide {
@@ -1671,32 +1571,62 @@
     setupPwaManifest();
 
     function setupPwaManifest(){
-      var scopePath = location.pathname.replace(/\/[^\/]*$/, '/') || '/';
-
       var manifest = {
         name:'iTrack - Internship Tracker',
         short_name:'iTrack',
-        start_url:location.href,
-        scope:scopePath,
+        description:'iTrack Internship Tracker',
+        start_url:'./',
+        scope:'./',
         display:'standalone',
         orientation:'portrait',
         background_color:'#FFFFFF',
         theme_color:'#0F172A',
         icons:[
-          { src:LOGO_URL, sizes:'192x192', type:'image/png', purpose:'any maskable' },
-          { src:LOGO_URL, sizes:'512x512', type:'image/png', purpose:'any maskable' }
+          {
+            src:LOGO_URL,
+            sizes:'192x192',
+            type:'image/png',
+            purpose:'any maskable'
+          },
+          {
+            src:LOGO_URL,
+            sizes:'512x512',
+            type:'image/png',
+            purpose:'any maskable'
+          }
         ]
       };
 
-      var blob = new Blob([JSON.stringify(manifest)], {
-        type:'application/json'
-      });
+      var manifestText = JSON.stringify(manifest);
+      var manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestText);
 
-      var url = URL.createObjectURL(blob);
+      var oldManifest = document.querySelector('link[rel="manifest"]');
+      if(oldManifest){
+        oldManifest.remove();
+      }
+
       var manifestLink = document.createElement('link');
       manifestLink.rel = 'manifest';
-      manifestLink.href = url;
+      manifestLink.href = manifestUrl;
       document.head.appendChild(manifestLink);
+
+      var favicon1 = document.createElement('link');
+      favicon1.rel = 'icon';
+      favicon1.type = 'image/png';
+      favicon1.sizes = '32x32';
+      favicon1.href = LOGO_URL;
+      document.head.appendChild(favicon1);
+
+      var favicon2 = document.createElement('link');
+      favicon2.rel = 'shortcut icon';
+      favicon2.type = 'image/png';
+      favicon2.href = LOGO_URL;
+      document.head.appendChild(favicon2);
+
+      var appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = LOGO_URL;
+      document.head.appendChild(appleIcon);
     }
 
     function init(){
