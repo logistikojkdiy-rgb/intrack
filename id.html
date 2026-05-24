@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="description" content="InTrack Internship Tracker">
+  <title>InTrack</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+    :root{
+      --navy:#0F172A;--blue:#2563EB;--sky:#38BDF8;--green:#16A34A;--amber:#F59E0B;--orange:#F97316;--red:#DC2626;--purple:#7C3AED;--gray:#64748B;
+      --soft-blue:#EFF6FF;--soft-green:#DCFCE7;--soft-amber:#FEF3C7;--soft-orange:#FFEDD5;--soft-red:#FEE2E2;--soft-purple:#F3E8FF;--soft-gray:#F1F5F9;
+      --bg:#F8FAFC;--card:#FFFFFF;--text:#0F172A;--muted:#64748B;--line:#E2E8F0;
+      --shadow:0 22px 70px rgba(15,23,42,.12);--shadow2:0 10px 30px rgba(15,23,42,.07);--side:276px;--radius:26px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Poppins,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    body.modal-open{overflow:hidden}
+    button,input,select,textarea{font-family:inherit}
+    button{cursor:pointer;border:0}
+    textarea{resize:vertical}
+    a{text-decoration:none}
+    .hidden{display:none!important}
+
+    .logo-img{width:56px;height:56px;border-radius:18px;background:#fff;border:1px solid rgba(226,232,240,.9);object-fit:contain;padding:6px;box-shadow:0 12px 30px rgba(15,23,42,.12);flex:0 0 auto}
+    .logo-img.large{width:96px;height:96px;border-radius:30px;padding:12px}
+    .logo-fallback{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;display:grid;place-items:center;font-weight:700;box-shadow:0 12px 30px rgba(15,23,42,.12)}
+    .logo-fallback.large{width:96px;height:96px;border-radius:30px;font-size:26px}
+
+    .btn{min-height:44px;border-radius:14px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;font-size:14px;font-weight:500;white-space:nowrap;transition:.18s}
+    .btn:hover{transform:translateY(-1px);filter:brightness(.96)}
+    .btn.block{width:100%}
+    .btn.light{background:var(--soft-gray);color:var(--text)}
+    .btn.outline{background:#fff;color:var(--text);border:1px solid var(--line)}
+    .btn.navy{background:var(--navy)}
+    .btn.green{background:var(--green)}
+    .btn.red{background:var(--red)}
+    .btn.orange{background:var(--orange)}
+    .btn.small{min-height:34px;border-radius:11px;padding:0 11px;font-size:12px}
+
+    .badge{display:inline-flex;align-items:center;justify-content:center;min-height:27px;border-radius:999px;padding:0 10px;font-size:12px;font-weight:500;background:var(--soft-gray);color:var(--gray)}
+    .badge.blue{background:var(--soft-blue);color:var(--blue)}
+    .badge.green{background:var(--soft-green);color:#166534}
+    .badge.amber{background:var(--soft-amber);color:#92400E}
+    .badge.orange{background:var(--soft-orange);color:#9A3412}
+    .badge.red{background:var(--soft-red);color:#991B1B}
+    .badge.purple{background:var(--soft-purple);color:var(--purple)}
+    .badge.navy{background:#E0E7FF;color:var(--navy)}
+
+    .splash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#fff;transition:.25s}
+    .splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    .splash-card{text-align:center;width:min(390px,90%)}
+    .splash-logo{width:130px;height:130px;margin:0 auto 22px;position:relative;display:grid;place-items:center}
+    .splash-logo:before{content:"";position:absolute;inset:-8px;border-radius:40px;border:4px solid #DBEAFE;border-top-color:var(--blue);animation:spin .88s linear infinite}
+    .splash-logo img,.splash-logo .logo-fallback{position:relative;z-index:1}
+    .splash h1{margin:0;font-size:34px;color:var(--navy);font-weight:700;letter-spacing:.08em}
+    .splash p{margin:10px 0 0;color:var(--muted);font-size:13px}
+
+    .loader{position:fixed;inset:0;z-index:9500;display:none;place-items:center;background:rgba(255,255,255,.82);backdrop-filter:blur(14px)}
+    .loader.show{display:grid}
+    .loader-card{width:min(360px,90%);background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px;text-align:center;box-shadow:var(--shadow)}
+    .loader-spinner{width:62px;height:62px;border-radius:50%;border:5px solid #DBEAFE;border-top-color:var(--blue);margin:0 auto 16px;animation:spin .8s linear infinite}
+    .loader-card strong{display:block;color:var(--navy)}
+    .loader-card span{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .auth{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top left,rgba(37,99,235,.10),transparent 34%),linear-gradient(180deg,#fff,#F8FAFC)}
+    .auth-shell{width:min(1160px,100%);display:grid;grid-template-columns:1.08fr .92fr;gap:24px}
+    .hero{min-height:640px;border-radius:38px;padding:44px;color:#fff;background:linear-gradient(135deg,var(--navy),#1D4ED8);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+    .hero:after{content:"";position:absolute;right:-150px;top:-140px;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .hero-brand{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+    .hero-brand strong{display:block;font-size:24px}
+    .hero-brand span{color:rgba(255,255,255,.74);font-size:13px}
+    .hero-copy{position:relative;z-index:1}
+    .hero-copy h2{margin:0;max-width:660px;font-size:clamp(34px,5vw,58px);line-height:1.07;letter-spacing:-.055em;font-weight:600}
+    .hero-copy p{margin:18px 0 0;max-width:640px;color:rgba(255,255,255,.78);line-height:1.85;font-size:14px}
+    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:1}
+    .hero-stat{padding:16px;border-radius:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+    .hero-stat strong{display:block;font-size:22px}
+    .hero-stat span{display:block;margin-top:4px;font-size:12px;color:rgba(255,255,255,.72);line-height:1.45}
+
+    .auth-card{background:#fff;border:1px solid var(--line);border-radius:38px;padding:40px;box-shadow:var(--shadow2);display:flex;flex-direction:column;justify-content:center}
+    .mobile-auth-brand{display:none;text-align:center;margin-bottom:24px}
+    .mobile-auth-brand img{margin:0 auto 12px}
+    .mobile-auth-brand strong{display:block;color:var(--navy);font-size:22px}
+    .mobile-auth-brand span{display:block;color:var(--muted);font-size:12px}
+    .auth-label{width:max-content;min-height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;background:var(--soft-blue);color:var(--blue);font-size:12px;margin-bottom:16px}
+    .auth-card h2{margin:0;font-size:32px;font-weight:600;letter-spacing:-.04em;color:var(--navy)}
+    .auth-card>p{margin:10px 0 24px;color:var(--muted);font-size:14px;line-height:1.7}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--soft-gray);padding:6px;border-radius:18px;margin-bottom:18px}
+    .tab{min-height:38px;border-radius:13px;background:transparent;color:var(--muted);font-size:12px;font-weight:500}
+    .tab.active{background:#fff;color:var(--blue);box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    .pane{display:none}
+    .pane.active{display:block;animation:fadeUp .18s ease}
+    .field{margin-bottom:15px}
+    .field label{display:block;margin-bottom:8px;color:#334155;font-size:13px;font-weight:500}
+    .field input,.field select,.field textarea{width:100%;min-height:52px;border:1px solid var(--line);border-radius:16px;padding:0 15px;background:#fff;outline:none;color:var(--text);font-size:14px}
+    .field textarea{min-height:112px;padding:14px;line-height:1.6}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
+    .auth-note{margin-top:15px;padding:14px;border-radius:18px;border:1px solid #BFDBFE;background:var(--soft-blue);color:var(--blue);font-size:12px;line-height:1.65}
+
+    .app{min-height:100vh;display:flex}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:#fff;border-right:1px solid var(--line);padding:20px;display:flex;flex-direction:column;z-index:50}
+    .app-brand{height:78px;border-radius:24px;padding:12px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#EFF6FF,#F8FAFC);border:1px solid var(--line);margin-bottom:22px}
+    .app-brand img{width:50px;height:50px;border-radius:16px;box-shadow:none}
+    .app-brand strong{display:block;color:var(--navy);font-size:15px}
+    .app-brand span{display:block;color:var(--muted);font-size:12px}
+    .nav{display:grid;gap:6px}
+    .nav button{height:46px;border-radius:15px;background:transparent;color:var(--muted);display:flex;align-items:center;gap:12px;padding:0 12px;font-size:14px;text-align:left}
+    .nav button.active,.nav button:hover{background:var(--soft-blue);color:var(--blue)}
+    .sidebar-footer{margin-top:auto;display:grid;gap:12px}
+    .user-box{border:1px solid var(--line);background:#F8FAFC;border-radius:18px;padding:14px}
+    .user-box strong{display:block;font-size:13px}
+    .user-box span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+
+    .main{margin-left:var(--side);width:calc(100% - var(--side));min-height:100vh}
+    .topbar{height:84px;position:sticky;top:0;z-index:40;background:rgba(248,250,252,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:16px}
+    .topbar h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.04em}
+    .topbar p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    .top-actions{display:flex;align-items:center;gap:10px}
+    .avatar{width:46px;height:46px;border-radius:50%;background:var(--navy);color:#fff;font-weight:600}
+    .content{width:min(1500px,100%);margin:0 auto;padding:28px 28px 112px;animation:fadeUp .18s ease}
+    .mobile-header{display:none}
+
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow2)}
+    .card h3{margin:0 0 12px;font-size:20px;font-weight:600;letter-spacing:-.03em;color:var(--navy)}
+    .card p{color:var(--muted);font-size:13px;line-height:1.65}
+    .section-head{margin:28px 0 16px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+    .section-head h3{margin:0;font-size:20px}
+    .section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .stat-icon{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;font-size:21px;margin-bottom:18px}
+    .i-blue{background:var(--soft-blue);color:var(--blue)}
+    .i-green{background:var(--soft-green);color:var(--green)}
+    .i-amber{background:var(--soft-amber);color:var(--amber)}
+    .i-orange{background:var(--soft-orange);color:var(--orange)}
+    .i-purple{background:var(--soft-purple);color:var(--purple)}
+    .i-navy{background:#E0E7FF;color:var(--navy)}
+    .stat-card strong{display:block;font-size:31px;font-weight:600;letter-spacing:-.05em;color:var(--navy)}
+    .stat-card span{display:block;margin-top:3px;color:var(--muted);font-size:13px}
+
+    .service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px}
+    .service-btn{background:transparent;text-align:center;padding:0}
+    .service-btn .stat-icon{margin:0 auto 8px}
+    .service-btn span{display:block;color:var(--text);font-size:11px}
+    .progress{margin-top:14px}
+    .progress-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:8px}
+    .bar{height:10px;border-radius:999px;background:#E5E7EB;overflow:hidden}
+    .bar span{display:block;height:100%;background:var(--blue);border-radius:inherit}
+
+    .list{display:grid;gap:12px}
+    .item{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px}
+    .item h4{margin:8px 0 6px;color:var(--navy);font-size:15px}
+    .item p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:20px;background:#fff}
+    .table{width:100%;border-collapse:collapse;min-width:820px}
+    .table th,.table td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}
+    .table th{background:#F8FAFC;color:var(--muted);font-weight:600}
+
+    .camera-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);gap:18px}
+    .camera-box{margin-top:16px;height:390px;border-radius:30px;border:2px solid var(--line);background:linear-gradient(180deg,#fff,#F8FAFC);overflow:hidden;display:grid;place-items:center;position:relative;color:var(--muted);text-align:center}
+    .camera-box video{width:100%;height:100%;object-fit:cover}
+    .camera-caption{position:absolute;left:24px;right:24px;bottom:24px;padding:10px;border-radius:16px;background:rgba(255,255,255,.92);color:var(--muted);font-size:13px}
+    .preview{height:260px;border:1px solid var(--line);border-radius:24px;background:#F8FAFC;display:grid;place-items:center;color:var(--muted);overflow:hidden;text-align:center}
+    .preview img{width:100%;height:100%;object-fit:cover}
+
+    .profile-shell{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:18px}
+    .profile-main{text-align:center}
+    .profile-photo{width:118px;height:118px;border-radius:36px;background:var(--soft-blue);color:var(--blue);display:grid;place-items:center;margin:0 auto 18px;font-size:34px;font-weight:700;border:1px solid #BFDBFE}
+    .meta-item{border:1px solid var(--line);background:#F8FAFC;padding:14px;border-radius:18px}
+    .meta-item span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+    .meta-item strong{display:block;color:var(--navy);font-size:13px;font-weight:600}
+
+    .center-modal{position:fixed;inset:0;z-index:5000;display:none;place-items:center;padding:20px;background:rgba(15,23,42,.42);backdrop-filter:blur(8px)}
+    .center-modal.show{display:grid}
+    .modal-card{width:min(560px,100%);max-height:calc(100vh - 40px);overflow-y:auto;background:#fff;border-radius:30px;padding:28px;box-shadow:var(--shadow);text-align:center;animation:fadeUp .18s ease}
+    .modal-card.wide{width:min(900px,100%);text-align:left}
+    .modal-icon{width:72px;height:72px;margin:0 auto 16px;border-radius:24px;display:grid;place-items:center;background:var(--soft-blue);color:var(--blue);font-size:28px;font-weight:700}
+    .modal-card h3{margin:0 0 8px;color:var(--navy);font-size:22px}
+    .modal-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}
+    .modal-extra{margin-top:16px;text-align:left}
+    .modal-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+    .bottom-nav{display:none}
+    .empty{border:1px dashed #CBD5E1;background:#F8FAFC;color:var(--muted);border-radius:20px;padding:20px;text-align:center;font-size:13px}
+    .guide-box{white-space:pre-wrap;background:#F8FAFC;border:1px solid var(--line);border-radius:18px;padding:16px;color:#334155;font-size:12px;line-height:1.7;max-height:420px;overflow:auto}
+    #bridgeFrame{width:0;height:0;border:0;position:absolute;opacity:0;pointer-events:none}
+
+    @media(max-width:1180px){
+      .auth-shell{grid-template-columns:1fr}
+      .hero{min-height:450px}
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3{grid-template-columns:repeat(2,1fr)}
+      .camera-layout{grid-template-columns:1fr}
+    }
+    @media(max-width:980px){
+      .sidebar{display:none}
+      .main{margin-left:0;width:100%}
+      .topbar{display:none}
+      .content{padding:0 14px 112px}
+      .mobile-header{display:block;margin:0 -14px 18px;padding:18px 14px 34px;background:linear-gradient(180deg,var(--navy),#1D4ED8);color:#fff;border-radius:0 0 30px 30px;box-shadow:var(--shadow)}
+      .mobile-header-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+      .mobile-header strong{font-size:18px}
+      .mobile-pill{margin-top:14px;height:42px;border-radius:999px;display:flex;align-items:center;padding:0 14px;background:#fff;color:var(--muted);font-size:12px}
+      .bottom-nav{position:fixed;left:12px;right:12px;bottom:12px;z-index:1000;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+      .bottom-nav button{border-radius:15px;background:transparent;color:var(--muted);font-size:10px;padding:8px 4px}
+      .bottom-nav button.active{background:var(--soft-blue);color:var(--blue)}
+    }
+    @media(max-width:720px){
+      .auth{align-items:start;padding:18px}
+      .auth-shell{display:block}
+      .hero{display:none}
+      .auth-card{padding:26px;border-radius:30px}
+      .mobile-auth-brand{display:block}
+      .auth-card h2,.auth-card>p{text-align:center}
+      .auth-label{margin-left:auto;margin-right:auto}
+      .tabs{grid-template-columns:repeat(2,1fr)}
+      .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+      .service-grid{grid-template-columns:repeat(4,1fr);gap:12px 6px}
+      .card{padding:18px;border-radius:22px}
+      .actions .btn{flex:1}
+      .camera-box{height:335px}
+      .profile-shell{grid-template-columns:1fr}
+      .modal-card,.modal-card.wide{width:100%}
+    }
+  </style>
+</head>
+
+<body>
+  <iframe id="bridgeFrame" title="InTrack Bridge"></iframe>
+
+  <section id="splash" class="splash">
+    <div class="splash-card">
+      <div class="splash-logo">
+        https://ik.imagekit.io/logojkdiy/InTrack.png
+      </div>
+      <h1>INTRACK</h1>
+      <p>Memuat aplikasi...</p>
+    </div>
+  </section>
+
+  <section id="loader" class="loader">
+    <div class="loader-card">
+      <div class="loader-spinner"></div>
+      <strong id="loaderTitle">Memproses</strong>
+      <span id="loaderText">Mohon tunggu sebentar.</span>
+    </div>
+  </section>
+
+  <section id="modalRoot" class="center-modal">
+    <div id="modalCard" class="modal-card">
+      <div class="modal-icon" id="modalIcon">i</div>
+      <h3 id="modalTitle">Informasi</h3>
+      <p id="modalMessage">Pesan</p>
+      <div id="modalExtra" class="modal-extra"></div>
+      <div id="modalActions" class="modal-actions"></div>
+    </div>
+  </section>
+
+  <section id="auth" class="auth hidden">
+    <div class="auth-shell">
+      <aside class="hero">
+        <div class="hero-brand">
+          https://ik.imagekit.io/logojkdiy/InTrack.png
+          <div>
+            <strong>InTrack</strong>
+            <span>Internship Tracker</span>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <h2>Internship tracker real-time untuk operasional magang.</h2>
+          <p>Presensi selfie, aktivitas harian, laporan, tugas mentor, KPI, notifikasi, dan dokumen PDF dalam satu sistem.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>Admin</strong><span>Approval, monitoring, dan laporan.</span></div>
+          <div class="hero-stat"><strong>Mentor</strong><span>Tugas, review, dan approval.</span></div>
+          <div class="hero-stat"><strong>Intern</strong><span>Presensi, aktivitas, dan laporan.</span></div>
+        </div>
+      </aside>
+
+      <main class="auth-card">
+        <div class="mobile-auth-brand">
+          https://ik.imagekit.io/logojkdiy/InTrack.png
+          <strong>InTrack</strong>
+          <span>Internship Tracker</span>
+        </div>
+
+        <div class="auth-label">● Enterprise Web App</div>
+        <h2 id="authTitle">Masuk Sistem</h2>
+        <p id="authSubtitle">Gunakan akun yang sudah terdaftar pada sistem.</p>
+
+        <div class="tabs">
+          <button class="tab active" type="button" data-auth-tab="login">Login</button>
+          <button class="tab" type="button" data-auth-tab="register">Daftar</button>
+          <button class="tab" type="button" data-auth-tab="forgot">Lupa</button>
+          <button class="tab" type="button" data-auth-tab="reset">Reset</button>
+        </div>
+
+        <div id="pane-login" class="pane active">
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label>Email</label>
+              <input id="loginEmail" type="email" autocomplete="username" placeholder="email@domain.com">
+            </div>
+            <div class="field">
+              <label>Kata Sandi</label>
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Minimal 8 karakter">
+            </div>
+            <button class="btn block" type="submit">Masuk</button>
+          </form>
+          <div class="auth-note">Akun baru perlu disetujui admin sebelum dapat digunakan.</div>
+        </div>
+
+        <div id="pane-register" class="pane">
+          <form id="registerForm" novalidate>
+            <div class="field"><label>Nama Lengkap</label><input id="regName" placeholder="Nama lengkap"></div>
+            <div class="field"><label>Email</label><input id="regEmail" type="email" placeholder="email@domain.com"></div>
+            <div class="field"><label>Nomor Telepon</label><input id="regPhone" placeholder="08xxxxxxxxxx"></div>
+            <div class="field"><label>Kata Sandi</label><input id="regPassword" type="password" placeholder="Minimal 8 karakter"></div>
+            <div class="field"><label>Konfirmasi Kata Sandi</label><input id="regConfirmPassword" type="password" placeholder="Ulangi kata sandi"></div>
+            <button class="btn block" type="submit">Daftar sebagai Intern</button>
+          </form>
+        </div>
+
+        <div id="pane-forgot" class="pane">
+          <form id="forgotForm" novalidate>
+            <div class="field"><label>Email</label><input id="forgotEmail" type="email" placeholder="email@domain.com"></div>
+            <button class="btn block" type="submit">Kirim Token Reset</button>
+          </form>
+        </div>
+
+        <div id="pane-reset" class="pane">
+          <form id="resetForm" novalidate>
+            <div class="field"><label>Email</label><input id="resetEmail" type="email"></div>
+            <div class="field"><label>Token Reset</label><input id="resetToken" placeholder="Token dari email"></div>
+            <div class="field"><label>Kata Sandi Baru</label><input id="resetPassword" type="password"></div>
+            <div class="field"><label>Konfirmasi Kata Sandi Baru</label><input id="resetConfirmPassword" type="password"></div>
+            <button class="btn block" type="submit">Reset Kata Sandi</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <main id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="app-brand">
+        https://ik.imagekit.io/logojkdiy/InTrack.png
+        <div>
+          <strong>InTrack</strong>
+          <span>Real Data</span>
+        </div>
+      </div>
+
+      <nav id="sideNav" class="nav"></nav>
+
+      <div class="sidebar-footer">
+        <div class="user-box">
+          <strong id="sideName">User</strong>
+          <span id="sideRole">Role</span>
+        </div>
+        install-appInstall Aplikasi</button>
+        fullscreenFullscreen</button>
+        logoutKeluar</button>
+      </div>
+    </aside>
+
+    <section class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="pageSubtitle">Ringkasan data InTrack</p>
+        </div>
+        <div class="top-actions">
+          guidePanduan</button>
+          refreshRefresh</button>
+          install-appInstall</button>
+          fullscreenFullscreen</button>
+          <button class="avatar" id="avatarBtn" type="button">IT</button>
+        </div>
+      </header>
+
+      <section id="content" class="content"></section>
+    </section>
+
+    <nav id="bottomNav" class="bottom-nav"></nav>
+  </main>
+
+  <canvas id="photoCanvas" class="hidden"></canvas>
+
+  <script>
+    'use strict';
+
+    const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/a/macros/pepklms.com/s/AKfycbxXPAv1bmT-jubxF3KDFAmthv3dN01j1shg3RXlyv4cqPcuwviqZZj0PwZK4XiRoYuA/exec';
+    const BRIDGE_URL = APPS_SCRIPT_WEB_APP_URL.indexOf('?') >= 0 ? APPS_SCRIPT_WEB_APP_URL + '&page=bridge' : APPS_SCRIPT_WEB_APP_URL + '?page=bridge';
+
+    const SESSION_KEY = 'INTRACK_SESSION_TOKEN';
+    const USER_KEY = 'INTRACK_SESSION_USER';
+    const LOGO_URL = 'https://ik.imagekit.io/logojkdiy/InTrack.png';
+
+    const MENU = [
+      { id:'dashboard', label:'Dashboard', icon:'▦', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'attendance', label:'Presensi', icon:'📷', roles:['INTERN'] },
+      { id:'activities', label:'Aktivitas', icon:'🗓', roles:['INTERN','MENTOR','SUPER ADMIN','ADMIN'] },
+      { id:'reports', label:'Laporan', icon:'📄', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'tasks', label:'Tugas', icon:'☑', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'kpi', label:'KPI', icon:'🎯', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'admin', label:'Admin', icon:'🛡', roles:['SUPER ADMIN','ADMIN'] },
+      { id:'notifications', label:'Notifikasi', icon:'🔔', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'guide', label:'Panduan', icon:'?', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] },
+      { id:'profile', label:'Profil', icon:'👤', roles:['SUPER ADMIN','ADMIN','MENTOR','INTERN'] }
+    ];
+
+    let deferredInstallPrompt = null;
+
+    let state = {
+      config:{ appName:'InTrack', appFullName:'InTrack — Internship Tracker', logoUrl:LOGO_URL },
+      sessionToken:'',
+      user:null,
+      data:null,
+      page:'dashboard',
+      stream:null,
+      photoBase64:'',
+      gps:{ latitude:'', longitude:'' },
+      pendingModalAction:null
+    };
+
+    const InTrackApi = {
+      iframe:null,
+      ready:false,
+      callbacks:{},
+
+      init:function(){
+        return new Promise((resolve,reject)=>{
+          if(this.ready && this.iframe){
+            resolve();
+            return;
+          }
+
+          const iframe = document.getElementById('bridgeFrame');
+          iframe.src = BRIDGE_URL;
+          this.iframe = iframe;
+
+          const timeout = setTimeout(()=>{
+            reject({
+              success:false,
+              message:'Bridge Apps Script timeout. Pastikan Web App dan Bridge.html sudah aktif.'
+            });
+          },25000);
+
+          const readyListener = (event)=>{
+            const data = event.data || {};
+            if(data.source === 'INTRACK_APPS_SCRIPT_BRIDGE_READY'){
+              clearTimeout(timeout);
+              window.removeEventListener('message', readyListener);
+              this.ready = true;
+              resolve();
+            }
+          };
+
+          window.addEventListener('message', readyListener);
+        });
+      },
+
+      listen:function(){
+        window.addEventListener('message',(event)=>{
+          const data = event.data || {};
+          if(data.source !== 'INTRACK_APPS_SCRIPT_BRIDGE') return;
+
+          const callback = this.callbacks[data.requestId];
+          if(!callback) return;
+
+          delete this.callbacks[data.requestId];
+
+          if(!data.success){
+            callback.reject(data.response || { success:false, message:'Bridge error.' });
+            return;
+          }
+
+          callback.resolve(data.response);
+        });
+      },
+
+      call:async function(action,payload){
+        await this.init();
+
+        return new Promise((resolve,reject)=>{
+          const requestId = 'REQ-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+
+          this.callbacks[requestId] = { resolve, reject };
+
+          this.iframe.contentWindow.postMessage({
+            source:'INTRACK_GITHUB_FRONTEND',
+            requestId,
+            action,
+            payload:payload || {}
+          }, '*');
+
+          setTimeout(()=>{
+            if(this.callbacks[requestId]){
+              delete this.callbacks[requestId];
+              reject({ success:false, message:'Request timeout.' });
+            }
+          },60000);
+        });
+      }
+    };
+
+    InTrackApi.listen();
+
+    window.addEventListener('beforeinstallprompt', function(event){
+      event.preventDefault();
+      deferredInstallPrompt = event;
+    });
+
+    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('click', handleClick);
+    document.addEventListener('submit', handleSubmit);
+
+    window.addEventListener('load', ()=>setTimeout(hideSplash,600));
+    window.addEventListener('error', ()=>setTimeout(hideSplash,300));
+    setTimeout(hideSplash,1800);
+
+    setupPwaManifest();
+
+    function setupPwaManifest(){
+      const manifest = {
+        name:'InTrack — Internship Tracker',
+        short_name:'InTrack',
+        start_url:location.href,
+        scope:location.pathname.replace(/\/[^\/]*$/,'/') || './',
+        display:'standalone',
+        orientation:'portrait',
+        background_color:'#FFFFFF',
+        theme_color:'#0F172A',
+        icons:[
+          { src:LOGO_URL, sizes:'192x192', type:'image/png', purpose:'any maskable' },
+          { src:LOGO_URL, sizes:'512x512', type:'image/png', purpose:'any maskable' }
+        ]
+      };
+
+      const blob = new Blob([JSON.stringify(manifest)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = url;
+      document.head.appendChild(link);
+      document.head.appendChild(makeAppleIcon());
+    }
+
+    function makeAppleIcon(){
+      const link = document.createElement('link');
+      link.rel = 'apple-touch-icon';
+      link.href = LOGO_URL;
+      return link;
+    }
+
+    function init(){
+      setupLogoFallbacks();
+
+      state.sessionToken = sessionStorage.getItem(SESSION_KEY) || '';
+
+      try{
+        const savedUser = sessionStorage.getItem(USER_KEY);
+        state.user = savedUser ? JSON.parse(savedUser) : null;
+      }catch(err){
+        state.user = null;
+      }
+
+      callApi('APP_CONFIG', {}, function(config){
+        state.config = config || state.config;
+        applyConfig();
+
+        if(state.sessionToken){
+          loadApp();
+        }else{
+          showAuth();
+        }
+      }, function(){
+        showAuth();
+      }, false);
+    }
+
+    function setupLogoFallbacks(){
+      document.querySelectorAll('img.logo-img').forEach(function(img){
+        img.addEventListener('error', function(){
+          const div = document.createElement('div');
+          div.className = img.classList.contains('large') ? 'logo-fallback large' : 'logo-fallback';
+          div.textContent = 'IT';
+          img.replaceWith(div);
+        });
+      });
+    }
+
+    function applyConfig(){
+      const logo = state.config.logoUrl || LOGO_URL;
+      ['splashLogo','heroLogo','mobileLogo','sidebarLogo'].forEach(function(id){
+        const img = document.getElementById(id);
+        if(img) img.src = logo;
+      });
+      document.title = state.config.appName || 'InTrack';
+    }
+
+    function hideSplash(){
+      const splash = document.getElementById('splash');
+      if(splash) splash.classList.add('hide');
+    }
+
+    function showAuth(){
+      hideLoader();
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('auth').classList.remove('hidden');
+      hideSplash();
+    }
+
+    function showApp(){
+      document.getElementById('auth').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      hideSplash();
+    }
+
+    function handleClick(e){
+      const tab = e.target.closest('[data-auth-tab]');
+      if(tab){
+        switchAuthTab(tab.dataset.authTab);
+        return;
+      }
+
+      const routeBtn = e.target.closest('[data-page]');
+      if(routeBtn){
+        route(routeBtn.dataset.page);
+        return;
+      }
+
+      const btn = e.target.closest('[data-action]');
+      if(!btn) return;
+
+      const action = btn.dataset.action;
+
+      if(action === 'logout') logout();
+      if(action === 'refresh') loadApp();
+      if(action === 'install-app') installApp();
+      if(action === 'fullscreen') toggleFullscreen();
+      if(action === 'guide') route('guide');
+
+      if(action === 'start-camera') startCamera();
+      if(action === 'capture-photo') capturePhoto();
+      if(action === 'stop-camera') stopCamera();
+      if(action === 'get-gps') getGps();
+      if(action === 'save-attendance') saveAttendance();
+
+      if(action === 'open-request-edit') openRequestEditModal(btn.dataset.id);
+      if(action === 'open-submit-task') openSubmitTaskModal(btn.dataset.id);
+      if(action === 'open-review-task') openReviewTaskModal(btn.dataset.id);
+      if(action === 'approve-report') approveReport(btn.dataset.id);
+
+      if(action === 'admin-approve-user') adminUpdateUser(btn.dataset.email, 'ACTIVE', btn.dataset.role || 'INTERN');
+      if(action === 'admin-reject-user') adminUpdateUser(btn.dataset.email, 'REJECTED', '');
+
+      if(action === 'download-guide-txt') downloadGuideTxt();
+      if(action === 'download-guide-word') downloadGuideWord();
+
+      if(action === 'close-modal') closeModal();
+      if(action === 'confirm-modal-action') runPendingModalAction();
+    }
+
+    function handleSubmit(e){
+      if(e.target.id === 'loginForm'){
+        e.preventDefault();
+        login();
+      }
+
+      if(e.target.id === 'registerForm'){
+        e.preventDefault();
+        registerManual();
+      }
+
+      if(e.target.id === 'forgotForm'){
+        e.preventDefault();
+        forgotPassword();
+      }
+
+      if(e.target.id === 'resetForm'){
+        e.preventDefault();
+        resetPassword();
+      }
+
+      if(e.target.id === 'activityForm'){
+        e.preventDefault();
+        saveActivity();
+      }
+
+      if(e.target.id === 'reportForm'){
+        e.preventDefault();
+        saveReport();
+      }
+
+      if(e.target.id === 'taskForm'){
+        e.preventDefault();
+        createTask();
+      }
+    }
+
+    async function callApi(action,payload,onSuccess,onFail,withLoader){
+      if(withLoader !== false) showLoader();
+
+      try{
+        const res = await InTrackApi.call(action, payload || {});
+        hideLoader();
+
+        if(!res || !res.success){
+          const message = res && res.message ? res.message : 'Terjadi kesalahan.';
+          if(onFail) onFail(message);
+          else showModal('Gagal', message, '', [{ label:'Tutup', className:'light', action:'close-modal' }]);
+          return;
+        }
+
+        if(onSuccess) onSuccess(res.data);
+      }catch(err){
+        hideLoader();
+        const message = err && err.message ? err.message : String(err || 'Terjadi kesalahan.');
+        if(onFail) onFail(message);
+        else showModal('Error', message, '', [{ label:'Tutup', className:'light', action:'close-modal' }]);
+      }
+    }
+
+    function showLoader(title,text){
+      document.getElementById('loaderTitle').textContent = title || 'Memproses';
+      document.getElementById('loaderText').textContent = text || 'Mohon tunggu sebentar.';
+      document.getElementById('loader').classList.add('show');
+    }
+
+    function hideLoader(){
+      document.getElementById('loader').classList.remove('show');
+    }
+
+    function switchAuthTab(tab){
+      const title = {
+        login:['Masuk Sistem','Gunakan akun yang sudah terdaftar.'],
+        register:['Daftar Akun','Akun baru masuk sebagai INTERN dan menunggu approval admin.'],
+        forgot:['Lupa Kata Sandi','Token reset akan dikirim ke email bila akun terdaftar.'],
+        reset:['Reset Kata Sandi','Masukkan token dari email untuk mengganti kata sandi.']
+      };
+
+      document.querySelectorAll('.tab').forEach(function(btn){
+        btn.classList.toggle('active', btn.dataset.authTab === tab);
+      });
+
+      document.querySelectorAll('.pane').forEach(function(pane){
+        pane.classList.remove('active');
+      });
+
+      document.getElementById('pane-' + tab).classList.add('active');
+      document.getElementById('authTitle').textContent = title[tab][0];
+      document.getElementById('authSubtitle').textContent = title[tab][1];
+    }
+
+    function login(){
+      const email = val('loginEmail');
+      const password = val('loginPassword');
+
+      if(!email || !password){
+        showModal('Data Belum Lengkap','Email dan kata sandi wajib diisi.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        return;
+      }
+
+      callApi('LOGIN_MANUAL', {
+        email,
+        password,
+        device:navigator.userAgent
+      }, function(data){
+        state.sessionToken = data.sessionToken;
+        state.user = data.user;
+        state.config = data.config || state.config;
+
+        sessionStorage.setItem(SESSION_KEY, state.sessionToken);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(state.user));
+
+        loadApp();
+      });
+    }
+
+    function registerManual(){
+      callApi('REGISTER_MANUAL', {
+        name:val('regName'),
+        email:val('regEmail'),
+        phone:val('regPhone'),
+        password:val('regPassword'),
+        confirmPassword:val('regConfirmPassword')
+      }, function(data){
+        showModal('Registrasi Berhasil', data.message || 'Akun menunggu approval admin.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        switchAuthTab('login');
+        document.getElementById('registerForm').reset();
+      });
+    }
+
+    function forgotPassword(){
+      callApi('FORGOT_PASSWORD', { email:val('forgotEmail') }, function(data){
+        showModal('Berhasil', data.message || 'Instruksi reset dikirim jika email terdaftar.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function resetPassword(){
+      callApi('RESET_PASSWORD', {
+        email:val('resetEmail'),
+        token:val('resetToken'),
+        newPassword:val('resetPassword'),
+        confirmPassword:val('resetConfirmPassword')
+      }, function(data){
+        showModal('Berhasil', data.message || 'Kata sandi diperbarui.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        switchAuthTab('login');
+        document.getElementById('resetForm').reset();
+      });
+    }
+
+    function loadApp(){
+      if(!state.sessionToken){
+        showAuth();
+        return;
+      }
+
+      callApi('LOAD_APP', { sessionToken:state.sessionToken }, function(data){
+        state.data = data;
+        state.user = data.user;
+        state.config = data.config || state.config;
+
+        sessionStorage.setItem(USER_KEY, JSON.stringify(state.user));
+
+        applyConfig();
+        showApp();
+        renderUser();
+        renderNav();
+        route(state.page || 'dashboard', false);
+      }, function(message){
+        sessionStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        state.sessionToken = '';
+        state.user = null;
+        showAuth();
+        showModal('Sesi Berakhir', message, '', [{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function renderUser(){
+      document.getElementById('sideName').textContent = state.user.name || '-';
+      document.getElementById('sideRole').textContent = state.user.role || '-';
+      document.getElementById('avatarBtn').textContent = initials(state.user.name);
+    }
+
+    function allowedMenus(){
+      const role = String(state.user && state.user.role || '').toUpperCase();
+      return MENU.filter(function(menu){ return menu.roles.includes(role); });
+    }
+
+    function canAccess(page){
+      return allowedMenus().some(function(menu){ return menu.id === page; });
+    }
+
+    function renderNav(){
+      const allowed = allowedMenus();
+
+      document.getElementById('sideNav').innerHTML = allowed.map(function(menu){
+        return `
+          <button class="${state.page === menu.id ? 'active' : ''}" type="button" data-page="${menu.id}">
+            <span>${menu.icon}</span>
+            <span>${menu.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      const bottom = allowed.filter(function(menu){
+        return ['dashboard','attendance','reports','tasks','profile'].includes(menu.id);
+      }).slice(0,5);
+
+      document.getElementById('bottomNav').innerHTML = bottom.map(function(menu){
+        return `
+          <button class="${state.page === menu.id ? 'active' : ''}" type="button" data-page="${menu.id}">
+            <span>${menu.icon}</span><br>${menu.label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function route(page, rerenderNav){
+      stopCamera();
+
+      if(!canAccess(page)) page = 'dashboard';
+      state.page = page;
+
+      if(rerenderNav !== false) renderNav();
+
+      const title = {
+        dashboard:['Dashboard','Ringkasan data InTrack'],
+        attendance:['Presensi','Presensi selfie dan dokumentasi lokasi'],
+        activities:['Aktivitas Harian','Catatan aktivitas dan progres kerja'],
+        reports:['Laporan Kerja','Laporan, approval, request edit, dan PDF'],
+        tasks:['Tugas Mentor','Tugas, submit hasil, dan review'],
+        kpi:['KPI Magang','Target dan progres KPI'],
+        admin:['Admin','Approval user dan monitoring sistem'],
+        notifications:['Notifikasi','Informasi dan riwayat pemberitahuan'],
+        guide:['Panduan','Petunjuk penggunaan aplikasi'],
+        profile:['Profil','Informasi akun aktif']
+      };
+
+      document.getElementById('pageTitle').textContent = title[page][0];
+      document.getElementById('pageSubtitle').textContent = title[page][1];
+
+      const views = {
+        dashboard:dashboardView,
+        attendance:attendanceView,
+        activities:activitiesView,
+        reports:reportsView,
+        tasks:tasksView,
+        kpi:kpiView,
+        admin:adminView,
+        notifications:notificationsView,
+        guide:guideView,
+        profile:profileView
+      };
+
+      document.getElementById('content').innerHTML = views;
+    }
+
+    function mobileHeader(){
+      return `
+        <div class="mobile-header">
+          <div class="mobile-header-top">
+            <strong>InTrack</strong>
+            logoutKeluar</button>
+          </div>
+          <div class="mobile-pill">${esc(state.user.role)} • Real Data</div>
+        </div>
+      `;
+    }
+
+    function dashboardView(){
+      const s = (state.data || {}).summary || {};
+      const totalReports = Number(s.totalReports || 0);
+      const approved = Number(s.reportsApproved || 0);
+      const pct = totalReports ? Math.round(approved / totalReports * 100) : 0;
+
+      return `
+        ${mobileHeader()}
+
+        <div class="card" style="margin-bottom:18px">
+          <span class="badge navy">${esc(state.user.role)}</span>
+          <h3 style="margin-top:14px">Halo, ${esc(state.user.name)}</h3>
+          <p>Data aplikasi diambil langsung dari backend InTrack.</p>
+          ${progress(pct, approved + ' / ' + totalReports + ' laporan disetujui')}
+          <div class="actions">
+            guidePanduan</button>
+            install-appInstall Aplikasi</button>
+            fullscreenFullscreen</button>
+          </div>
+        </div>
+
+        ${servicesView()}
+
+        <div class="grid grid-4">
+          ${stat('📷', s.totalAttendance || 0, 'Presensi', 'Total data presensi')}
+          ${stat('🗓', s.totalActivities || 0, 'Aktivitas', 'Aktivitas harian')}
+          ${stat('📄', s.totalReports || 0, 'Laporan', 'Laporan kerja')}
+          ${stat('☑', s.totalTasks || 0, 'Tugas', 'Tugas mentor')}
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h3>Data Terbaru</h3>
+            <p>Ringkasan laporan dan tugas terakhir.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Laporan Terbaru</h3>
+            <div class="list">${latestReportsHtml()}</div>
+          </div>
+          <div class="card">
+            <h3>Tugas Terbaru</h3>
+            <div class="list">${latestTasksHtml()}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function servicesView(){
+      const role = String(state.user.role || '').toUpperCase();
+      let items = [];
+
+      if(role === 'SUPER ADMIN' || role === 'ADMIN'){
+        items = [
+          ['admin','Approval','🛡','navy'],
+          ['reports','Laporan','📄','purple'],
+          ['tasks','Tugas','☑','orange'],
+          ['kpi','KPI','🎯','green']
+        ];
+      }else if(role === 'MENTOR'){
+        items = [
+          ['tasks','Review Tugas','☑','orange'],
+          ['reports','Review Laporan','📄','purple'],
+          ['activities','Aktivitas','🗓','blue'],
+          ['kpi','KPI','🎯','green']
+        ];
+      }else{
+        items = [
+          ['attendance','Presensi','📷','blue'],
+          ['activities','Aktivitas','🗓','green'],
+          ['reports','Laporan','📄','purple'],
+          ['tasks','Tugas','☑','orange']
+        ];
+      }
+
+      return `
+        <div class="card" style="margin-bottom:18px">
+          <h3>Layanan InTrack</h3>
+          <div class="service-grid">
+            ${items.map(function(item){
+              return `
+                <button class="service-btn" type="button" data-page="${item[0]}">
+                  <div class="stat-icon i-${item[3]}">${item[2]}</div>
+                  <span>${item[1]}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function attendanceView(){
+      return `
+        ${mobileHeader()}
+        <div class="camera-layout">
+          <div class="card">
+            <h3>Presensi Selfie</h3>
+            <p>Foto presensi diberi watermark di browser, lalu disimpan ke Drive InTrack.</p>
+            <div id="cameraBox" class="camera-box">
+              <div>
+                <div class="stat-icon i-blue" style="margin:0 auto 12px">📷</div>
+                Kamera belum aktif
+              </div>
+              <div class="camera-caption">Aktifkan kamera untuk mengambil foto presensi.</div>
+            </div>
+            <div class="actions">
+              start-cameraAktifkan Kamera</button>
+              capture-photoCapture</button>
+              get-gpsAmbil GPS</button>
+              stop-cameraMatikan</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Submit Presensi</h3>
+            <div id="photoPreview" class="preview">Foto tampil di sini</div>
+
+            <div class="field" style="margin-top:16px">
+              <label>Mode Presensi</label>
+              <select id="attMode">
+                <option value="MASUK">Masuk</option>
+                <option value="PULANG">Pulang</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Status Kehadiran</label>
+              <select id="attStatus">
+                <option value="HADIR">Hadir</option>
+                <option value="IZIN">Izin</option>
+                <option value="SAKIT">Sakit</option>
+                <option value="TUGAS LUAR">Tugas Luar</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Catatan</label>
+              <textarea id="attNote" placeholder="Opsional"></textarea>
+            </div>
+
+            <p id="gpsInfo" style="margin-top:0">GPS: belum diambil.</p>
+            save-attendanceSimpan Presensi</button>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h3>Riwayat Presensi</h3>
+            <p>Data presensi tersimpan di sheet PRESENSI.</p>
+          </div>
+        </div>
+
+        <div class="list">${attendanceListHtml()}</div>
+      `;
+    }
+
+    function activitiesView(){
+      const role = String(state.user.role || '').toUpperCase();
+      const canCreate = role === 'INTERN';
+
+      return `
+        ${mobileHeader()}
+        <div class="grid grid-2">
+          ${canCreate ? `
+            <div class="card">
+              <h3>Aktivitas Harian</h3>
+              <form id="activityForm" novalidate>
+                ${fieldInput('actDate','Tanggal','date')}
+                ${fieldInput('actTitle','Judul Aktivitas','text','Contoh: Dokumentasi kegiatan unit')}
+                <div class="field">
+                  <label>Kategori</label>
+                  <select id="actCategory">
+                    <option>ADMINISTRASI</option>
+                    <option>OPERASIONAL</option>
+                    <option>TEKNIS</option>
+                    <option>DOKUMENTASI</option>
+                    <option>PELAYANAN</option>
+                    <option>LAINNYA</option>
+                  </select>
+                </div>
+                ${fieldInput('actDuration','Durasi Jam','number','Contoh: 4')}
+                ${fieldTextarea('actDescription','Deskripsi Aktivitas')}
+                ${fieldTextarea('actResult','Hasil Pekerjaan')}
+                ${fieldTextarea('actObstacle','Kendala')}
+                ${fieldTextarea('actNextPlan','Rencana Lanjutan')}
+                <button class="btn block" type="submit">Simpan Aktivitas</button>
+              </form>
+            </div>
+          ` : ''}
+
+          <div class="card" style="${canCreate ? '' : 'grid-column:1/-1'}">
+            <h3>Daftar Aktivitas</h3>
+            <div class="list">${activitiesListHtml()}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function reportsView(){
+      const role = String(state.user.role || '').toUpperCase();
+      const canCreate = role === 'INTERN';
+
+      return `
+        ${mobileHeader()}
+        <div class="grid grid-2">
+          ${canCreate ? `
+            <div class="card">
+              <h3>Buat Laporan Kerja</h3>
+              <form id="reportForm" novalidate>
+                ${fieldInput('repDate','Tanggal Laporan','date')}
+                <div class="field">
+                  <label>Jenis Laporan</label>
+                  <select id="repType">
+                    <option>HARIAN</option>
+                    <option>MINGGUAN</option>
+                    <option>BULANAN</option>
+                    <option>AKHIR MAGANG</option>
+                  </select>
+                </div>
+                ${fieldInput('repTitle','Judul Laporan')}
+                ${fieldTextarea('repContent','Isi Laporan')}
+                ${fieldTextarea('repAchievement','Capaian')}
+                ${fieldTextarea('repObstacle','Kendala')}
+                ${fieldTextarea('repSolution','Solusi')}
+                ${fieldTextarea('repLearning','Pembelajaran')}
+                <button class="btn block" type="submit">Kirim Laporan</button>
+              </form>
+            </div>
+          ` : ''}
+
+          <div class="card" style="${canCreate ? '' : 'grid-column:1/-1'}">
+            <h3>Daftar Laporan</h3>
+            <div class="list">${reportsListHtml()}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function tasksView(){
+      const role = String(state.user.role || '').toUpperCase();
+      const canCreate = ['SUPER ADMIN','ADMIN','MENTOR'].includes(role);
+
+      return `
+        ${mobileHeader()}
+        ${canCreate ? `
+          <div class="card" style="margin-bottom:18px">
+            <h3>Buat Tugas Mentor</h3>
+            <form id="taskForm" class="grid grid-2" novalidate>
+              <div class="field">
+                <label>Intern</label>
+                <select id="taskIntern">${internOptionsHtml()}</select>
+              </div>
+              <div class="field">
+                <label>Prioritas</label>
+                <select id="taskPriority">
+                  <option>RENDAH</option>
+                  <option selected>SEDANG</option>
+                  <option>TINGGI</option>
+                  <option>MENDESAK</option>
+                </select>
+              </div>
+              ${fieldInput('taskDueDate','Tanggal Tenggat','date')}
+              ${fieldInput('taskDueTime','Waktu Tenggat','time')}
+              <div class="field" style="grid-column:1/-1">
+                <label>Judul Tugas</label>
+                <input id="taskTitle">
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <label>Deskripsi Tugas</label>
+                <textarea id="taskDescription"></textarea>
+              </div>
+              <div style="grid-column:1/-1">
+                <button class="btn" type="submit">Buat Tugas</button>
+              </div>
+            </form>
+          </div>
+        ` : ''}
+
+        <div class="card">
+          <h3>Daftar Tugas</h3>
+          <div class="list">${tasksListHtml()}</div>
+        </div>
+      `;
+    }
+
+    function kpiView(){
+      const kpi = state.data.kpi || [];
+      const progressRows = state.data.kpiProgress || [];
+
+      return `
+        ${mobileHeader()}
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Master KPI</h3>
+            <div class="list">
+              ${kpi.length ? kpi.map(function(row){
+                return `
+                  <div class="item">
+                    <span class="badge green">${esc(row['Status KPI'] || '-')}</span>
+                    <h4>${esc(row['Nama KPI'])}</h4>
+                    <p>${esc(row['Deskripsi KPI'])}</p>
+                    <p>Kategori: ${esc(row['Kategori KPI'])} • Target: ${esc(row['Target Nilai'])} • Bobot: ${esc(row['Bobot Persen'])}</p>
+                  </div>
+                `;
+              }).join('') : emptyHtml('Belum ada KPI.')}
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Progres KPI</h3>
+            <div class="list">
+              ${progressRows.length ? progressRows.map(function(row){
+                return `
+                  <div class="item">
+                    <span class="badge blue">${esc(row['Status Progres'] || '-')}</span>
+                    <h4>${esc(row['ID KPI'])}</h4>
+                    <p>Nilai: ${esc(row['Nilai Saat Ini'])} • Progres: ${esc(row['Persentase Progres'])}</p>
+                    <p>${esc(row['Catatan Intern'] || '')}</p>
+                  </div>
+                `;
+              }).join('') : emptyHtml('Belum ada progres KPI.')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function adminView(){
+      const users = state.data.users || [];
+      const pending = users.filter(function(user){
+        return String(user.status || '').toUpperCase() === 'PENDING';
+      });
+
+      return `
+        ${mobileHeader()}
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Approval User</h3>
+            <div class="list">
+              ${pending.length ? pending.map(function(user){
+                return `
+                  <div class="item">
+                    <span class="badge amber">${esc(user.status)}</span>
+                    <h4>${esc(user.name)}</h4>
+                    <p>${esc(user.email)} • ${esc(user.role)}</p>
+                    <div class="actions">
+                      admin-approve-userApprove Intern</button>
+                      admin-approve-userApprove Mentor</button>
+                      admin-reject-userReject</button>
+                    </div>
+                  </div>
+                `;
+              }).join('') : emptyHtml('Tidak ada user pending.')}
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Semua User</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Peran</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${users.map(function(user){
+                    return `
+                      <tr>
+                        <td>${esc(user.name)}</td>
+                        <td>${esc(user.email)}</td>
+                        <td><span class="badge navy">${esc(user.role)}</span></td>
+                        <td><span class="badge ${statusClass(user.status)}">${esc(user.status)}</span></td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function notificationsView(){
+      const list = state.data.notifications || [];
+
+      return `
+        ${mobileHeader()}
+        <div class="card">
+          <h3>Notifikasi</h3>
+          <div class="list">
+            ${list.length ? list.map(function(n){
+              return `
+                <div class="item">
+                  <span class="badge blue">${esc(n['Jenis Notifikasi'] || 'SISTEM')}</span>
+                  <h4>${esc(n['Judul Notifikasi'])}</h4>
+                  <p>${esc(n['Isi Notifikasi'])}</p>
+                  <p>${esc(n['Dibuat Pada'])}</p>
+                </div>
+              `;
+            }).join('') : emptyHtml('Belum ada notifikasi.')}
+          </div>
+        </div>
+      `;
+    }
+
+    function guideView(){
+      return `
+        ${mobileHeader()}
+        <div class="card">
+          <h3>Panduan Penggunaan InTrack</h3>
+          <p>Panduan ini dapat dibaca langsung dan diunduh oleh pengguna.</p>
+          <div class="actions">
+            download-guide-txtDownload TXT</button>
+            download-guide-wordDownload Word</button>
+            install-appInstall Aplikasi</button>
+            fullscreenFullscreen</button>
+          </div>
+          <div class="guide-box" style="margin-top:16px">${esc(getGuideText())}</div>
+        </div>
+      `;
+    }
+
+    function profileView(){
+      const user = state.user;
+
+      return `
+        ${mobileHeader()}
+        <div class="profile-shell">
+          <div class="card profile-main">
+            <div class="profile-photo">${initials(user.name)}</div>
+            <h3>${esc(user.name)}</h3>
+            <p>${esc(user.email)}</p>
+            <span class="badge navy">${esc(user.role)}</span>
+            <span class="badge ${statusClass(user.status)}">${esc(user.status)}</span>
+            <div class="actions" style="justify-content:center">
+              install-appInstall</button>
+              fullscreenFullscreen</button>
+              logoutKeluar</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Detail Akun</h3>
+            <div class="grid grid-2">
+              ${meta('ID Pengguna', user.id)}
+              ${meta('Nama Lengkap', user.name)}
+              ${meta('Email', user.email)}
+              ${meta('Nomor Telepon', user.phone || '-')}
+              ${meta('Penyedia Login', user.provider || '-')}
+              ${meta('Peran', user.role)}
+              ${meta('Status Akun', user.status)}
+              ${meta('Login Terakhir', user.lastLogin || '-')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function fieldInput(id,label,type,placeholder){
+      return `
+        <div class="field">
+          <label>${esc(label)}</label>
+          <input id="${escAttr(id)}" type="${escAttr(type || 'text')}" placeholder="${escAttr(placeholder || '')}">
+        </div>
+      `;
+    }
+
+    function fieldTextarea(id,label){
+      return `
+        <div class="field">
+          <label>${esc(label)}</label>
+          <textarea id="${escAttr(id)}"></textarea>
+        </div>
+      `;
+    }
+
+    function stat(icon,value,title,desc){
+      return `
+        <div class="card stat-card">
+          <div class="stat-icon i-blue">${icon}</div>
+          <strong>${esc(value)}</strong>
+          <span>${esc(title)}</span>
+          <p>${esc(desc)}</p>
+        </div>
+      `;
+    }
+
+    function progress(percent,label){
+      return `
+        <div class="progress">
+          <div class="progress-meta">
+            <span>${esc(label)}</span>
+            <span>${percent}%</span>
+          </div>
+          <div class="bar"><span style="width:${percent}%"></span></div>
+        </div>
+      `;
+    }
+
+    function latestReportsHtml(){
+      const rows = (state.data.reports || []).slice(-4).reverse();
+      if(!rows.length) return emptyHtml('Belum ada laporan.');
+      return rows.map(reportItemHtml).join('');
+    }
+
+    function latestTasksHtml(){
+      const rows = (state.data.tasks || []).slice(-4).reverse();
+      if(!rows.length) return emptyHtml('Belum ada tugas.');
+      return rows.map(taskItemHtml).join('');
+    }
+
+    function attendanceListHtml(){
+      const rows = (state.data.attendance || []).slice().reverse();
+      if(!rows.length) return emptyHtml('Belum ada presensi.');
+
+      return rows.map(function(row){
+        return `
+          <div class="item">
+            <span class="badge blue">${esc(row['Status Kehadiran'] || '-')}</span>
+            <h4>${esc(row['Tanggal Presensi'])}</h4>
+            <p>Masuk: ${esc(row['Waktu Masuk'] || '-')} • Pulang: ${esc(row['Waktu Pulang'] || '-')}</p>
+            <p>Status: ${esc(row['Status Verifikasi'] || '-')}</p>
+            <div class="actions">
+              ${row['Foto Masuk'] ? `${escAttr(row[Foto Masuk</a>` : ''}
+              ${row['Foto Pulang'] ? `${escAttr(row[Foto Pulang</a>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function activitiesListHtml(){
+      const rows = (state.data.dailyActivities || []).slice().reverse();
+      if(!rows.length) return emptyHtml('Belum ada aktivitas.');
+
+      return rows.map(function(row){
+        return `
+          <div class="item">
+            <span class="badge ${statusClass(row['Status Aktivitas'])}">${esc(row['Status Aktivitas'] || '-')}</span>
+            <h4>${esc(row['Judul Aktivitas'])}</h4>
+            <p>${esc(row['Deskripsi Aktivitas'])}</p>
+            <p>${esc(row['Tanggal Aktivitas'])} • ${esc(row['Kategori Aktivitas'])} • ${esc(row['Durasi Jam'])} jam</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function reportsListHtml(){
+      const rows = (state.data.reports || []).slice().reverse();
+      if(!rows.length) return emptyHtml('Belum ada laporan.');
+      return rows.map(reportItemHtml).join('');
+    }
+
+    function reportItemHtml(row){
+      const role = String(state.user.role || '').toUpperCase();
+      const canApprove = ['SUPER ADMIN','ADMIN','MENTOR'].includes(role) && String(row['Status Laporan']).toUpperCase() !== 'DISETUJUI';
+      const canRequestEdit = role === 'INTERN';
+
+      return `
+        <div class="item">
+          <span class="badge ${statusClass(row['Status Laporan'])}">${esc(row['Status Laporan'] || '-')}</span>
+          <h4>${esc(row['Judul Laporan'])}</h4>
+          <p>${esc(row['Isi Laporan'])}</p>
+          <p>${esc(row['Tanggal Laporan'])} • ${esc(row['Jenis Laporan'])}</p>
+          <div class="actions">
+            ${canRequestEdit ? `open-request-editRequest Edit</button>` : ''}
+            ${canApprove ? `approve-reportApprove</button>` : ''}
+            ${row['URL Dokumen PDF'] ? `${escAttr(row[Buka PDF</a>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function tasksListHtml(){
+      const rows = (state.data.tasks || []).slice().reverse();
+      if(!rows.length) return emptyHtml('Belum ada tugas.');
+      return rows.map(taskItemHtml).join('');
+    }
+
+    function taskItemHtml(row){
+      const role = String(state.user.role || '').toUpperCase();
+      const canSubmit = role === 'INTERN';
+      const canReview = ['SUPER ADMIN','ADMIN','MENTOR'].includes(role);
+
+      return `
+        <div class="item">
+          <span class="badge ${statusClass(row['Status Tugas'])}">${esc(row['Status Tugas'] || '-')}</span>
+          <h4>${esc(row['Judul Tugas'])}</h4>
+          <p>${esc(row['Deskripsi Tugas'])}</p>
+          <p>Intern: ${esc(row['Nama Intern'])} • Mentor: ${esc(row['Nama Mentor'])}</p>
+          ${row['Hasil Pengerjaan'] ? `<p>Hasil: ${esc(row['Hasil Pengerjaan'])}</p>` : ''}
+          <div class="actions">
+            ${canSubmit ? `open-submit-taskSubmit</button>` : ''}
+            ${canReview ? `open-review-taskReview</button>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function internOptionsHtml(){
+      const users = state.data.users || [];
+      const interns = users.filter(function(user){
+        return String(user.role || '').toUpperCase() === 'INTERN' &&
+          String(user.status || '').toUpperCase() === 'ACTIVE';
+      });
+
+      if(!interns.length) return '<option value="">Belum ada intern aktif</option>';
+
+      return interns.map(function(user){
+        return `<option value="${escAttr(user.email)}">${esc(user.name)} — ${esc(user.email)}</option>`;
+      }).join('');
+    }
+
+    function meta(label,value){
+      return `
+        <div class="meta-item">
+          <span>${esc(label)}</span>
+          <strong>${esc(value || '-')}</strong>
+        </div>
+      `;
+    }
+
+    function emptyHtml(text){
+      return `<div class="empty">${esc(text)}</div>`;
+    }
+
+    async function startCamera(){
+      try{
+        stopCamera();
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video:{
+            facingMode:{ ideal:'user' },
+            width:{ ideal:1280 },
+            height:{ ideal:720 }
+          },
+          audio:false
+        });
+
+        state.stream = stream;
+
+        const box = document.getElementById('cameraBox');
+        if(!box) return;
+
+        box.innerHTML = `
+          <video id="cameraVideo" autoplay playsinline muted></video>
+          <div class="camera-caption">Kamera aktif. Tekan Capture untuk mengambil foto.</div>
+        `;
+
+        document.getElementById('cameraVideo').srcObject = stream;
+      }catch(err){
+        showModal('Kamera Gagal','Pastikan browser memiliki izin kamera dan aplikasi dibuka melalui HTTPS.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      }
+    }
+
+    function stopCamera(){
+      if(state.stream){
+        state.stream.getTracks().forEach(function(track){ track.stop(); });
+        state.stream = null;
+      }
+    }
+
+    function capturePhoto(){
+      const video = document.getElementById('cameraVideo');
+
+      if(!video){
+        showModal('Kamera Belum Aktif','Aktifkan kamera terlebih dahulu.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        return;
+      }
+
+      const canvas = document.getElementById('photoCanvas');
+      const w = video.videoWidth || 1280;
+      const h = video.videoHeight || 720;
+
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video,0,0,w,h);
+      drawWatermark(ctx,w,h);
+
+      state.photoBase64 = canvas.toDataURL('image/jpeg', .82);
+
+      const preview = document.getElementById('photoPreview');
+      if(preview) preview.innerHTML = `${state.photoBase64}`;
+    }
+
+    function drawWatermark(ctx,w,h){
+      const lines = [
+        'INTRACK VERIFIED',
+        'Nama: ' + (state.user.name || '-'),
+        'Waktu: ' + new Date().toLocaleString('id-ID', { hour12:false }),
+        'GPS: ' + (state.gps.latitude || '-') + ', ' + (state.gps.longitude || '-')
+      ];
+
+      const x = 24;
+      const y = h - 148;
+      const boxW = Math.min(560, w - 48);
+      const boxH = 120;
+
+      ctx.fillStyle = 'rgba(15,23,42,.78)';
+      roundRect(ctx,x,y,boxW,boxH,22);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'left';
+      ctx.font = '600 20px Poppins, Arial';
+      ctx.fillText(lines[0], x + 18, y + 34);
+
+      ctx.font = '400 15px Poppins, Arial';
+      ctx.fillText(lines[1], x + 18, y + 62);
+      ctx.fillText(lines[2], x + 18, y + 86);
+      ctx.fillText(lines[3], x + 18, y + 108);
+
+      ctx.fillStyle = '#38BDF8';
+      ctx.fillRect(x + 18, y + boxH - 10, boxW - 36, 4);
+    }
+
+    function roundRect(ctx,x,y,width,height,radius){
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + width, y, x + width, y + height, radius);
+      ctx.arcTo(x + width, y + height, x, y + height, radius);
+      ctx.arcTo(x, y + height, x, y, radius);
+      ctx.arcTo(x, y, x + width, y, radius);
+      ctx.closePath();
+    }
+
+    function getGps(){
+      if(!navigator.geolocation){
+        showModal('GPS Tidak Didukung','Browser tidak mendukung geolocation.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(function(pos){
+        state.gps.latitude = pos.coords.latitude;
+        state.gps.longitude = pos.coords.longitude;
+
+        const info = document.getElementById('gpsInfo');
+        if(info) info.textContent = 'GPS: ' + state.gps.latitude + ', ' + state.gps.longitude;
+
+        showModal('GPS Tersimpan','Koordinat berhasil diambil.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      }, function(){
+        showModal('GPS Gagal','Izin lokasi ditolak atau lokasi tidak tersedia.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      }, {
+        enableHighAccuracy:true,
+        timeout:10000,
+        maximumAge:0
+      });
+    }
+
+    function saveAttendance(){
+      if(!state.photoBase64){
+        showModal('Foto Kosong','Ambil foto presensi terlebih dahulu.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        return;
+      }
+
+      callApi('SAVE_ATTENDANCE', {
+        sessionToken:state.sessionToken,
+        mode:val('attMode'),
+        attendanceStatus:val('attStatus'),
+        note:val('attNote'),
+        latitude:state.gps.latitude,
+        longitude:state.gps.longitude,
+        photoBase64:state.photoBase64
+      }, function(data){
+        state.data = data;
+        state.photoBase64 = '';
+        route('attendance');
+        showModal('Berhasil','Presensi tersimpan.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function saveActivity(){
+      callApi('SAVE_DAILY_ACTIVITY', {
+        sessionToken:state.sessionToken,
+        date:dateInputToId(val('actDate')),
+        title:val('actTitle'),
+        category:val('actCategory'),
+        duration:val('actDuration'),
+        description:val('actDescription'),
+        result:val('actResult'),
+        obstacle:val('actObstacle'),
+        nextPlan:val('actNextPlan')
+      }, function(data){
+        state.data = data;
+        route('activities');
+        showModal('Berhasil','Aktivitas harian tersimpan.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function saveReport(){
+      callApi('SAVE_WORK_REPORT', {
+        sessionToken:state.sessionToken,
+        date:dateInputToId(val('repDate')),
+        type:val('repType'),
+        title:val('repTitle'),
+        content:val('repContent'),
+        achievement:val('repAchievement'),
+        obstacle:val('repObstacle'),
+        solution:val('repSolution'),
+        learning:val('repLearning')
+      }, function(data){
+        state.data = data;
+        route('reports');
+        showModal('Berhasil','Laporan kerja terkirim.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function createTask(){
+      callApi('CREATE_MENTOR_TASK', {
+        sessionToken:state.sessionToken,
+        internEmail:val('taskIntern'),
+        priority:val('taskPriority'),
+        dueDate:dateInputToId(val('taskDueDate')),
+        dueTime:val('taskDueTime'),
+        title:val('taskTitle'),
+        description:val('taskDescription')
+      }, function(data){
+        state.data = data;
+        route('tasks');
+        showModal('Berhasil','Tugas mentor dibuat.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function openRequestEditModal(reportId){
+      state.pendingModalAction = function(){
+        callApi('REQUEST_EDIT_REPORT', {
+          sessionToken:state.sessionToken,
+          reportId,
+          reason:val('modalReason'),
+          section:val('modalSection')
+        }, function(data){
+          state.data = data;
+          closeModal();
+          route('reports');
+          showModal('Berhasil','Permintaan edit laporan terkirim.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        });
+      };
+
+      showModal('Request Edit Laporan','Isi alasan permintaan edit.', `
+        <div class="field">
+          <label>Bagian yang Diedit</label>
+          <select id="modalSection">
+            <option>JUDUL</option>
+            <option>ISI LAPORAN</option>
+            <option>CAPAIAN</option>
+            <option>KENDALA</option>
+            <option>SOLUSI</option>
+            <option>LAMPIRAN</option>
+            <option>LAINNYA</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Alasan Edit</label>
+          <textarea id="modalReason"></textarea>
+        </div>
+      `, [
+        { label:'Kirim', className:'navy', action:'confirm-modal-action' },
+        { label:'Batal', className:'light', action:'close-modal' }
+      ], true);
+    }
+
+    function openSubmitTaskModal(taskId){
+      state.pendingModalAction = function(){
+        callApi('SUBMIT_TASK', {
+          sessionToken:state.sessionToken,
+          taskId,
+          result:val('modalTaskResult')
+        }, function(data){
+          state.data = data;
+          closeModal();
+          route('tasks');
+          showModal('Berhasil','Hasil tugas terkirim.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        });
+      };
+
+      showModal('Submit Tugas','Isi hasil pengerjaan tugas.', `
+        <div class="field">
+          <label>Hasil Pengerjaan</label>
+          <textarea id="modalTaskResult"></textarea>
+        </div>
+      `, [
+        { label:'Kirim', className:'navy', action:'confirm-modal-action' },
+        { label:'Batal', className:'light', action:'close-modal' }
+      ], true);
+    }
+
+    function openReviewTaskModal(taskId){
+      state.pendingModalAction = function(){
+        callApi('REVIEW_TASK', {
+          sessionToken:state.sessionToken,
+          taskId,
+          status:val('modalTaskStatus'),
+          note:val('modalTaskNote'),
+          score:val('modalTaskScore')
+        }, function(data){
+          state.data = data;
+          closeModal();
+          route('tasks');
+          showModal('Berhasil','Review tugas tersimpan.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        });
+      };
+
+      showModal('Review Tugas','Tentukan status review tugas.', `
+        <div class="field">
+          <label>Status</label>
+          <select id="modalTaskStatus">
+            <option value="DISETUJUI">Disetujui</option>
+            <option value="REVISI">Revisi</option>
+            <option value="DIREVIEW">Direview</option>
+            <option value="DIBATALKAN">Dibatalkan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nilai</label>
+          <input id="modalTaskScore" type="number" min="0" max="100">
+        </div>
+        <div class="field">
+          <label>Catatan Mentor</label>
+          <textarea id="modalTaskNote"></textarea>
+        </div>
+      `, [
+        { label:'Simpan', className:'navy', action:'confirm-modal-action' },
+        { label:'Batal', className:'light', action:'close-modal' }
+      ], true);
+    }
+
+    function approveReport(reportId){
+      state.pendingModalAction = function(){
+        callApi('APPROVE_WORK_REPORT', {
+          sessionToken:state.sessionToken,
+          reportId,
+          reviewNote:val('modalReviewNote')
+        }, function(data){
+          state.data = data;
+          closeModal();
+          route('reports');
+          showModal('Berhasil','Laporan disetujui dan PDF diproses.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+        });
+      };
+
+      showModal('Approve Laporan','Tambahkan catatan review bila diperlukan.', `
+        <div class="field">
+          <label>Catatan Review</label>
+          <textarea id="modalReviewNote">Disetujui.</textarea>
+        </div>
+      `, [
+        { label:'Approve', className:'green', action:'confirm-modal-action' },
+        { label:'Batal', className:'light', action:'close-modal' }
+      ], true);
+    }
+
+    function adminUpdateUser(email,status,role){
+      callApi('ADMIN_UPDATE_USER', {
+        sessionToken:state.sessionToken,
+        email,
+        status,
+        role
+      }, function(data){
+        state.data = data;
+        route('admin');
+        showModal('Berhasil','Status user diperbarui.','',[{ label:'Tutup', className:'light', action:'close-modal' }]);
+      });
+    }
+
+    function logout(){
+      const token = state.sessionToken;
+
+      stopCamera();
+
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(USER_KEY);
+
+      state.sessionToken = '';
+      state.user = null;
+      state.data = null;
+
+      if(token){
+        callApi('LOGOUT', { sessionToken:token }, function(){}, function(){}, false);
+      }
+
+      showAuth();
+    }
+
+    async function installApp(){
+      if(deferredInstallPrompt){
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        return;
+      }
+
+      showModal(
+        'Install Aplikasi',
+        'Jika tombol install browser belum tersedia, gunakan menu browser lalu pilih Add to Home Screen atau Install App.',
+        '',
+        [{ label:'Tutup', className:'light', action:'close-modal' }]
+      );
+    }
+
+    function toggleFullscreen(){
+      const doc = document;
+      const el = document.documentElement;
+
+      if(!doc.fullscreenElement){
+        if(el.requestFullscreen) el.requestFullscreen();
+      }else{
+        if(doc.exitFullscreen) doc.exitFullscreen();
+      }
+    }
+
+    function showModal(title,message,extra,actions,wide){
+      document.body.classList.add('modal-open');
+
+      const root = document.getElementById('modalRoot');
+      const card = document.getElementById('modalCard');
+
+      card.classList.toggle('wide', !!wide);
+      document.getElementById('modalIcon').textContent = 'i';
+      document.getElementById('modalTitle').textContent = title || 'Informasi';
+      document.getElementById('modalMessage').textContent = message || '';
+      document.getElementById('modalExtra').innerHTML = extra || '';
+
+      const modalActions = actions || [{ label:'Tutup', className:'light', action:'close-modal' }];
+
+      document.getElementById('modalActions').innerHTML = modalActions.map(function(action){
+        return `${escAttr(action.action)}${esc(action.label)}</button>`;
+      }).join('');
+
+      root.classList.add('show');
+    }
+
+    function closeModal(){
+      document.body.classList.remove('modal-open');
+      document.getElementById('modalRoot').classList.remove('show');
+      document.getElementById('modalExtra').innerHTML = '';
+      state.pendingModalAction = null;
+    }
+
+    function runPendingModalAction(){
+      if(typeof state.pendingModalAction === 'function'){
+        state.pendingModalAction();
+      }
+    }
+
+    function getGuideText(){
+      return [
+        'PANDUAN PENGGUNAAN INTRACK',
+        'Versi: 1.0',
+        '',
+        '1. LOGIN',
+        '- Buka aplikasi InTrack.',
+        '- Masukkan email dan kata sandi.',
+        '- Tekan tombol Masuk.',
+        '- Jika akun belum aktif, hubungi admin untuk approval.',
+        '',
+        '2. INSTALL APLIKASI',
+        '- Setelah login, tekan tombol Install Aplikasi.',
+        '- Jika tombol install belum muncul, buka menu browser.',
+        '- Pilih Add to Home Screen atau Install App.',
+        '- Setelah terpasang, InTrack dapat dibuka seperti aplikasi perangkat.',
+        '',
+        '3. FULLSCREEN',
+        '- Tekan tombol Fullscreen pada dashboard atau sidebar.',
+        '- Untuk keluar fullscreen, tekan tombol Esc atau gunakan tombol fullscreen lagi.',
+        '',
+        '4. PRESENSI INTERN',
+        '- Buka menu Presensi.',
+        '- Tekan Aktifkan Kamera.',
+        '- Tekan Ambil GPS bila diperlukan.',
+        '- Tekan Capture.',
+        '- Pilih mode Masuk atau Pulang.',
+        '- Isi catatan bila diperlukan.',
+        '- Tekan Simpan Presensi.',
+        '- Foto akan disimpan ke Drive melalui backend InTrack.',
+        '',
+        '5. AKTIVITAS HARIAN',
+        '- Buka menu Aktivitas.',
+        '- Isi tanggal, judul, kategori, durasi, deskripsi, hasil, kendala, dan rencana lanjutan.',
+        '- Tekan Simpan Aktivitas.',
+        '- Data tersimpan pada sheet AKTIVITAS HARIAN.',
+        '',
+        '6. LAPORAN KERJA',
+        '- Buka menu Laporan.',
+        '- Isi tanggal, jenis laporan, judul, isi laporan, capaian, kendala, solusi, dan pembelajaran.',
+        '- Tekan Kirim Laporan.',
+        '- Laporan akan masuk status DIKIRIM.',
+        '- Laporan dapat disetujui oleh mentor/admin.',
+        '- Setelah disetujui, PDF dapat dibuat oleh backend.',
+        '',
+        '7. REQUEST EDIT LAPORAN',
+        '- Pada daftar laporan, tekan Request Edit.',
+        '- Pilih bagian yang diedit.',
+        '- Isi alasan edit.',
+        '- Tekan Kirim.',
+        '- Tunggu proses dari mentor/admin.',
+        '',
+        '8. TUGAS MENTOR',
+        '- Mentor/admin dapat membuat tugas dari menu Tugas.',
+        '- Pilih intern, prioritas, tenggat, judul, dan deskripsi.',
+        '- Intern dapat membuka tugas dan menekan Submit.',
+        '- Mentor/admin dapat melakukan Review dan memberi nilai.',
+        '',
+        '9. ADMIN',
+        '- Admin dapat membuka menu Admin.',
+        '- Admin dapat approve akun baru sebagai Intern atau Mentor.',
+        '- Admin dapat menolak user yang tidak valid.',
+        '',
+        '10. KPI',
+        '- Menu KPI menampilkan master KPI dan progres KPI.',
+        '- KPI digunakan untuk monitoring kehadiran, kedisiplinan, produktivitas, dan kualitas laporan.',
+        '',
+        '11. NOTIFIKASI',
+        '- Menu Notifikasi berisi pemberitahuan akun, laporan, tugas, KPI, dan sistem.',
+        '- Notifikasi juga dapat dikirim melalui email jika backend mengaktifkannya.',
+        '',
+        '12. PROFIL',
+        '- Menu Profil menampilkan informasi akun aktif.',
+        '- Pengguna dapat logout dari halaman profil.',
+        '',
+        '13. KEAMANAN',
+        '- Jangan membagikan password.',
+        '- Logout setelah selesai menggunakan perangkat bersama.',
+        '- Gunakan reset password jika lupa kata sandi.',
+        '',
+        '14. TROUBLESHOOTING',
+        '- Jika kamera gagal, pastikan browser memiliki izin kamera dan akses HTTPS.',
+        '- Jika GPS gagal, pastikan izin lokasi aktif.',
+        '- Jika data tidak muncul, tekan Refresh.',
+        '- Jika sesi berakhir, login ulang.',
+        '- Jika install tidak muncul, gunakan menu browser Add to Home Screen.',
+        '',
+        '15. AKUN AWAL SISTEM',
+        '- Admin awal disiapkan pada backend saat setup Code.gs.',
+        '- Setelah login pertama, admin disarankan mengganti password.'
+      ].join('\n');
+    }
+
+    function downloadGuideTxt(){
+      downloadBlob('Panduan_InTrack.txt', new Blob([getGuideText()], { type:'text/plain;charset=utf-8' }));
+    }
+
+    function downloadGuideWord(){
+      const html =
+        '<html><head><meta charset="UTF-8"><title>Panduan InTrack</title></head><body>' +
+        '<h1>Panduan Penggunaan InTrack</h1>' +
+        '<pre style="font-family:Arial;white-space:pre-wrap;line-height:1.6">' + esc(getGuideText()) + '</pre>' +
+        '</body></html>';
+
+      downloadBlob('Panduan_InTrack.doc', new Blob([html], { type:'application/msword;charset=utf-8' }));
+    }
+
+    function downloadBlob(filename,blob){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function statusClass(status){
+      const s = String(status || '').toUpperCase();
+
+      if(['ACTIVE','AKTIF','DISETUJUI','VALID','BERHASIL','YA','SELESAI'].includes(s)) return 'green';
+      if(['PENDING','MENUNGGU','DIKIRIM','DIREVIEW','BARU','DIKERJAKAN','MENUNGGU EDIT'].includes(s)) return 'amber';
+      if(['REVISI','PERLU REVISI','TERLAMBAT','MENDESAK'].includes(s)) return 'orange';
+      if(['BLOCKED','REJECTED','DITOLAK','GAGAL','TIDAK VALID'].includes(s)) return 'red';
+
+      return 'blue';
+    }
+
+    function val(id){
+      const el = document.getElementById(id);
+      return el ? String(el.value || '').trim() : '';
+    }
+
+    function dateInputToId(value){
+      if(!value) return '';
+      const p = value.split('-');
+      if(p.length !== 3) return value;
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function initials(name){
+      return String(name || 'IT')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0,2)
+        .map(function(word){ return word[0]; })
+        .join('')
+        .toUpperCase();
+    }
+
+    function esc(value){
+      return String(value == null ? '' : value)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    function escAttr(value){
+      return esc(value).replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
